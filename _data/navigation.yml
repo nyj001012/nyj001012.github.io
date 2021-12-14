@@ -7,7 +7,9 @@ main:
   - title: "HTML"
     url: "/html/"
   - title: "C#"
-    url: "/csharp"
+    url: "/csharp/"
+  - title: "자격증"
+    url: "/license/"
     
   # - title: "Quick-Start Guide"
   #   url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
