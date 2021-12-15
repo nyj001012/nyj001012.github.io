@@ -5,4 +5,5 @@ permalink: /license/
 author_profile: true
 sidebar: 
     nav: "main"
+taxonomy: license
 ---

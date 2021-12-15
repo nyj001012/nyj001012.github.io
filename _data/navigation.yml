@@ -1,15 +1,26 @@
 # main links
 main:
-  - title: "Python"
-    url: "/python/"
+  - title: "Web"
+    url: "/web/"
+    name: "web"
   - title: "Spring"
     url: "/spring/"
+    name: "spring"
+  - title: "Spring Boot"
+    url: "/springboot/"
+    name: "springboot"
   - title: "HTML"
     url: "/html/"
+    name: "html"
+  - title: "Python"
+    url: "/python/"
+    name: "python"
   - title: "C#"
     url: "/csharp/"
+    name: "csharp"
   - title: "자격증"
     url: "/license/"
+    name: "license"
     
   # - title: "Quick-Start Guide"
   #   url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/

@@ -5,4 +5,5 @@ permalink: /python/
 author_profile: true
 sidebar: 
     nav: "main"
+taxonomy: python
 ---
