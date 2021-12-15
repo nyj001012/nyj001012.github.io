@@ -1,6 +1,6 @@
 ---
 title: "C#"
-layout: categories
+layout: category
 permalink: /csharp/
 author_profile: true
 sidebar: 

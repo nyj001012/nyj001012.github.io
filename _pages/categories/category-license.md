@@ -1,6 +1,6 @@
 ---
 title: "자격증"
-layout: categories
+layout: category
 permalink: /license/
 author_profile: true
 sidebar: 

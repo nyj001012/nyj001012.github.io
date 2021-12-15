@@ -1,6 +1,6 @@
 ---
 title: "Spring"
-layout: categories
+layout: category
 permalink: /spring/
 author_profile: true
 sidebar: 

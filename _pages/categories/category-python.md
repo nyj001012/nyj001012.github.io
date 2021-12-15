@@ -1,6 +1,6 @@
 ---
 title: "Python"
-layout: categories
+layout: category
 permalink: /python/
 author_profile: true
 sidebar: 

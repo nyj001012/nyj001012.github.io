@@ -1,8 +1,7 @@
 ---
 title:  "Exclude Post from Search Index"
 search: false
-categories: 
-  - Python
+permalink: /python/
 last_modified_at: 2018-02-19T08:06:00-05:00
 author_profile: true
 sidebar: 

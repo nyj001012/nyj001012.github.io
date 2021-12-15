@@ -1,6 +1,6 @@
 ---
 title: "HTML"
-layout: categories
+layout: category
 permalink: /html/
 author_profile: true
 sidebar: 
