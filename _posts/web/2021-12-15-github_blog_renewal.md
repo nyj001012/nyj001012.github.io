@@ -11,7 +11,7 @@ tag:
   - jekyll customize
 toc: true
 toc_sticky: true
-last_modified_at: 2022-01-01T00:00:00+09:00
+last_modified_at: 2022-01-09T00:00:00+09:00
 ---
 ![image](/assets/images/page/web/before_renewal.png)
 > 블로그 폰트 나눔고딕으로 바꾸고 싶은데 구글링 한 지킬(jekyll) 폴더 구조랑 다르네..? 어? 이상하다?
@@ -270,7 +270,8 @@ errors:
 {% else %}
   {% assign date = document.date %}
 {% endif %}
-```{% endraw %}
+```
+{% endraw %}
 
 ![update_date5](/assets/images/page/web/2022-01-01_align_post5.png)
 
@@ -290,8 +291,60 @@ errors:
 ```liquid
 {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
 <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {{ "최초작성:" }}</strong> <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: date_format }}</time></p>
-```{% endraw %}
+```
+{% endraw %}
 
 이렇게 하면 하단의 '업데이트: 업데이트 날짜' 였던 부분이 '최초작성: 작성일'로 바뀐다.(카테고리랑 열 너비 맞추고 싶어서 일부러 띄어쓰기 안 했다.) 포스트의 최초 작성일보다 업데이트 날짜를 중시하는 나에게는 저게 맞는 방법이었다. 
 
-다음에는 이 업데이트 날짜를 토대로 카테고리 페이지를 정렬해보자.
+다음에는 이 업데이트 날짜를 토대로 카테고리 페이지를 정렬해보자.  
+
+### 3.8. favicon.ico 추가하기
+![favicon_error](/assets/images/page/web/2022-01-09_favicon1.png)
+
+"아 알았어 favicon 추가해주면 될 거 아냐."  
+매번 개발자 도구를 켤 때마다 저 오류가 뜨는 게 상당히 거슬려서 일단 favicon 먼저 추가해주기로 했다.
+
+#### 3.8.1. 마음에 드는 아이콘을 찾자
+![flaticon](/assets/images/page/web/2022-01-09_favicon2.png)
+
+위의 사이트는 무료 아이콘으로 유명한 flaticon의 사이트이다. ['The noun project'](https://thenounproject.com/)도 유명한데, 여기는 유료 회원이 아니면 흑백 밖에 못 써서 flaticon으로 정했다.  
+
+아이콘은 삐약이에 맞는 병아리로 다운받았다.
+
+#### 3.8.2. 어디에 favicon을 추가할까?
+![custom.html](/assets/images/page/web/2022-01-09_favicon3.png)
+
+favicon은 `custom.html`에 추가하면 된다.
+
+이 파일에서 favicon을 삽입하는 데, <https://realfavicongenerator.net/>을 사용하라고 한다.
+
+#### 3.8.3. favicon을 생성하자
+![favicon_generator1](/assets/images/page/web/2022-01-09_favicon4.png)
+
+위의 사이트에 들어가서 아까 flaticon에서 다운받은 병아리 이미지를 등록해주면 위와 같은 사이트로 이동한다. 내 favicon이 각 브라우저에서, 디바이스에서 어떻게 보일지를 미리 알려준다.
+
+위의 내용을 쭉 훑어보고 'Generate Your Favicons and HTML code'를 눌러서 favicon을 생성하자. 그러면
+
+![favicon_generator2](/assets/images/page/web/2022-01-09_favicon5.png)
+
+이와 같은 HTML 코드가 생성된다. 'Install your favicon'의 내용은 다음과 같다.
+
+1. 'Favicon package' 버튼을 클릭해서 패키지를 다운받는다.
+2. 웹사이트 폴더에 압축 파일을 푼다. (나는 /assets/images/favicon.ico/chick에 압축 파일의 내용물을 넣었다. apple-touch-icon은 chick-icon으로 바꿨다.)  
+   ![favicon_folder](/assets/images/page/web/2022-01-09_favicon6.png)
+3. ```<head>``` 섹션에 생성된 HTML 코드를 넣는다.
+
+#### 3.8.4. favicon HTML을 추가하자
+![custom.html](/assets/images/page/web/2022-01-09_favicon7.png)
+
+아까 `custom.html`에서 favicon에 대한 내용을 다룬다고 했는데, favicon generator에서 생성된 HTML코드를 이곳에 넣는다.
+
+단, 나처럼 favicon의 경로를 임의로 수정한 경우에는 `<link href>`를 수정해줘야 한다.
+
+#### 3.8.5. 적용된 favicon을 확인해보자
+![favicon1](/assets/images/page/web/2022-01-09_favicon8.png)
+![favicon2](/assets/images/page/web/2022-01-09_favicon9.png)
+
+favicon이 제대로 적용된 것을 확인할 수 있다(귀엽다). 이건 어쩌다 알게 된 건데, 연결에 오류가 생겨 사이트에 접속하지 못했을 경우의 favicon도 생성이 되어 있었다.
+
+PC에서뿐만 아니라, 모바일에 맞춰진 favicon도 확인할 수 있다.
