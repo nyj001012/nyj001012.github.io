@@ -27,6 +27,9 @@ main:
   - title: "자격증"
     url: "/license/"
     name: "license"
+  - title: "기타"
+    url: "/etc/"
+    name: "etc"
     
   # - title: "Quick-Start Guide"
   #   url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
