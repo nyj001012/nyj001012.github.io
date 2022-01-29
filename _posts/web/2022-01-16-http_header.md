@@ -11,7 +11,7 @@ tag:
   - http header
 toc: true
 toc_sticky: true
-last_modified_at: 2022-01-16T00:00:00+09:00
+last_modified_at: 2022-01-29T00:00:00+09:00
 ---
 > 이 포스트는 김영한님의 ['모든 개발자를 위한 HTTP 웹 기본 지식'](https://www.inflearn.com/course/http-%EC%9B%B9-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC)을 수강하고 작성하였습니다.  
 
@@ -361,3 +361,180 @@ last_modified_at: 2022-01-16T00:00:00+09:00
 ### SameSite
 - XSRF 공격 방지
 - 요청 도메인과 쿠키에 설정된 도메인이 같은 경우에만 쿠키 전송
+
+# 캐시 기본 동작
+## 캐시가 없다면
+- 데이터가 변경되지 않아도 계속 네트워크를 통해서 요청 때마다 데이터를 다운로드 받아야 한다.
+- 인터넷 네트워크는 매우 느리고 비싸다.
+- 브라우저 로딩 속도가 느리다.
+- 느린 사용자 경험
+
+## 캐시
+- 캐시 가능 시간 동안 네트워크를 사용하지 않아도 된다.
+- 비싼 네트워크 사용량을 줄일 수 있다.
+- 브라우저 로딩 속도가 매우 빠르다.
+- 빠른 사용자 경험
+
+### 캐시 적용 예시
+![with_cache1](/assets/images/page/web/2022-01-29_w_cache1.jpg)
+
+- 웹 브라우저에서 서버로 '/star.jpg' 리소스를 GET으로 요청한다.
+- 서버는 HTTP 헤더에 `cache-control`(캐시 유효 시간, 초 단위)을 추가한 응답 메시지를 웹 브라우저로 전송한다.
+
+![with_cache2](/assets/images/page/web/2022-01-29_w_cache2.jpg)
+
+- 웹 브라우저 내의 캐시 저장소에 응답 결과를 저장한다.
+
+![with_cache3](/assets/images/page/web/2022-01-29_w_cache3.jpg)
+
+- 웹 브라우저가 똑같은 리소스를 60초 내로 요청한다.
+
+![with_cache4](/assets/images/page/web/2022-01-29_w_cache4.jpg)
+
+- 웹 브라우저가 요청한 리소스를 서버가 아니라, 캐시 저장소에서 응답한다.
+
+# 검증 헤더와 조건부 요청
+- 캐시 유효 시간을 초과해도 서버의 데이터가 갱신되지 않으면 304 Not Modified, 헤더 메타 정보만 응답
+- 클라이언트는 서버가 보낸 응답 헤더 정보로 캐시의 메타 정보를 갱신
+- 클라이언트는 캐시에 저장되어 있는 데이터 재활용
+- 결과적으로 네트워크 다운로드가 발생하더라도 용량이 작은 헤더 정보만 다운로드
+
+## 검증 헤더
+- 캐시 데이터와 서버 데이터가 같은지 검증하는 데이터
+  - 예) 
+    - Last-Modified: Thu, 04 Jun 2020 07:19:24 GMT 
+    - ETag: "v1.0"
+
+## 조건부 요청 헤더
+- 검증 헤더로 조건에 따른 분기
+- If-Modified-Since 또는 If-Unmodified-Since와 Last-Modified 사용
+- If-None-Match 또는 If-Match와 ETag 사용
+- 조건을 만족하면 200 OK
+- 조건을 만족하지 않으면 304 Not Modified
+
+## 검증 헤더와 조건부 요청 등장 배경
+- 캐시 유효 시간을 초과하여 서버에 다시 요청하면 고려해야 할 상황
+  - 서버에서 기존 데이터를 변경
+  - 서버에서 기존 데이터를 변경하지 않음
+    - 같은 데이터인데 굳이 다시 다운로드 받을 필요가 있을까?
+    - 서버에서 데이터를 전송하는 대신에 저장해 둔 캐시를 재사용 할 수 있다.
+    - 단, 클라이언트의 데이터와 서버의 데이터가 같다는 사실을 확인해야 한다.
+
+## If-Modified-Since, Last-Modified
+![ims_lm1](/assets/images/page/web/2022-01-29_ims_lm1.jpg)
+
+- 웹 브라우저에서 서버로 '/star.jpg' 리소스를 GET으로 요청한다.
+- 서버는 HTTP 응답 메시지에 데이터가 마지막으로 수정된 시간인 `Last-Modified`(UTC 표기) 값을 포함하여 웹 브라우저로 전송한다.
+
+![ims_lm2](/assets/images/page/web/2022-01-29_ims_lm2.jpg)
+
+- 데이터 최종 수정일을 포함한 응답 결과를 캐시에 저장한다.
+
+![ims_lm3](/assets/images/page/web/2022-01-29_ims_lm3.jpg)
+
+- 캐시 유효 시간이 지나고 다시 서버에 요청을 보내면, 캐시 저장소 내의 리소스를 사용할 수 없다.
+- 웹 브라우저는 캐시 내의 리소스에 `Last-Modified` 값이 있음을 알고 있다. 따라서 서버에게 캐시가 가지고 있는 데이터 최종 수정일인 `if-modified-since` 값이 추가된 요청 메시지를 전송한다.
+- 서버는 `if-modified-since` 값과 서버 내 리소스의 데이터 최종 수정일을 비교한다.
+
+![ims_lm4](/assets/images/page/web/2022-01-29_ims_lm4.jpg)
+
+- `if-modified-since` 값과 서버 내 리소스의 데이터 최종 수정일이 같다면, `304 Not Modified` 응답을 한다. 이때 HTTP Body는 없다. '/star.jpg'의 용량은 1.1M임에 반해, 0.1M의 HTTP 메시지만 전송한다.
+- 브라우저 캐시 내의 `cache-control`과 `Last-Modified` 값을 갱신한다.
+- 이후 웹 브라우저는 갱신된 캐시를 사용한다.
+
+### If-Modified-Since, Last-Modified 단점
+- 1초 미만(0.×초) 단위로 캐시 조정 불가능
+- 날짜 기반의 로직 사용
+- 데이터를 수정해서 날짜가 다르지만, 같은 데이터를 수정해서 데이터 결과가 똑같아도 다시 다운로드
+- 서버에서 별도의 캐시 로직을 관리하고 싶은 경우 어떻게 할 것인가?
+  - 예) 스페이스나 주석처럼 크게 영향이 없는 변경에서 캐시를 유지하고 싶을 때
+
+## ETag(Entity Tag), If-None-Match
+- 캐시용 데이터에 임의의 고유한 버전 이름을 사용
+  - 예) ETag: "v1.0", ETag: "probe1"
+- 데이터가 변경되면 이 이름을 바꾸어서 변경(Hash 재생성)
+  - 데이터가 같으면 Hash 값은 같지만, 데이터가 다르면 Hash 값이 다르게 나옴
+- 클라이언트는 ETag만 보내서 같으면 유지, 다르면 다시 받으면 됨
+- **캐시 제어 로직을 서버에서 완전히 관리**
+- 클라이언트는 ETag 값을 서버에 제공, 클라이언트는 캐시 메커니즘을 모르는 상태
+- 예)
+  - 서버는 베타 오픈 기간인 3일 동안 파일이 변경되어도 ETag를 동일하게 유지
+  - 어플리케이션 배포 주기에 맞춰 ETag 모두 갱신
+
+![et_inm1](/assets/images/page/web/2022-01-29_et_inm1.jpg)
+
+- 웹 브라우저에서 서버로 '/star.jpg' 리소스를 GET으로 요청한다.
+- 서버는 HTTP 응답 메시지에 '/star.jpg'의 해시 값인 `ETag` 값을 포함하여 웹 브라우저로 전송한다.
+- 캐시 저장소에는 `ETag` 값이 포함된 응답 결과를 저장한다.
+
+![et_inm2](/assets/images/page/web/2022-01-29_et_inm2.jpg)
+
+- 웹 브라우저가 캐시 유효 시간을 초과하여 서버로 요청 메시지를 보낼 때, 캐시 저장소 내 '/star.jpg'의 `ETag` 값을 `If-None-Match`의 값으로 지정하여 요청 메시지를 보낸다.
+- 데이터가 수정되지 않았으므로, 서버는 `304 Not Modified` 응답을 한다. 이때 HTTP Body는 없다.
+- 캐시 저장소 내 '/star.jpg'의 캐시를 갱신한다.
+- 이후 웹 브라우저는 갱신된 캐시를 사용한다.
+
+# 캐시와 조건부 요청 헤더
+- Cache-Control: 캐시 제어
+- Pragma: 캐시 제어(하위 호환)
+- Expires: 캐시 유효 기간
+
+## Cache-Control
+- Cache-Control: max-age 
+  - 캐시 유효 시간, 초 단위
+- Cache-Control: no-cache
+  - 데이터는 캐시해도 되지만, 항상 origin 서버에 검증하고 사용
+- Cache-Control: no-store 
+  - 데이터에 민감한 정보가 있으므로 저장하면 안 됨(메모리에서 사용하고 최대한 빨리 삭제)
+- Cache-Control: must-revalidate
+  - 캐시 만료 후 최초 조회 시, origin 서버에 검증해야 함
+  - origin 서버 접근 실패 시, 반드시 오류가 발생해야 함, 504(Gateway Timeout)
+  - must-revalidate는 캐시 유효 시간 내라면 캐시를 사용
+- Cache-Control: public 
+  - 응답이 public 캐시(프록시 캐시 서버)에 저장되어도 됨
+- Cache-Control: private 
+  - 응답이 해당 사용자만을 위한 것, private 캐시(웹 브라우저 캐시)에 저장해야 함(기본값)
+- Cache-Control: s-maxage 
+  - 프록시 캐시에만 적용되는 max-age
+- Age: 60 (HTTP 헤더) 
+  - origin 서버에서 응답 후 프록시 캐시 내에 머문 시간(초 단위)
+
+### Cache-Control: no-cache 동작
+![no-cache1](/assets/images/page/web/2022-01-29_no_cache1.jpg)
+
+- 웹 브라우저가 프록시 캐시 서버에 `no-cache`와 `ETag`를 이용하여 요청한다.
+- 프록시 캐시 서버는 `no-cache`에 의해 원 서버에 요청한다.
+- 원 서버는 검증을 하고 프록시 캐시 서버에 응답을 한다.
+- 프록시 캐시 서버는 웹 브라우저에 응답하고, 결과가 브라우저 캐시에 저장된다.
+- 웹 브라우저는 브라우저 캐시의 데이터를 사용한다.
+
+## Pragma
+- Pragma: no-cache 
+  - Cache-Control: no-cache와 같은 역할
+- HTTP 1.0 하위 호환으로, 지금은 사용하지 않는 편
+
+## Expires
+- 캐시 만료일을 정확한 날짜로 지정
+  - 예) expires: Mon, 01 Jan 1990 00:00:00 GMT
+- HTTP 1.0부터 사용
+- 지금은 더 유연한 Cache-Control: max-age 권장
+- Cache-Control: max-age와 함께 사용하면 Expires는 무시
+
+# 프록시 캐시
+![proxy_cache](/assets/images/page/web/2022-01-29_proxy_cache.jpg)
+
+- 웹 브라우저가 프록시 캐시 서버에 접근하여 요청한다. 이때 웹 브라우저는 DNS 등을 확인하여 원(origin) 서버가 아니라 프록시 캐시 서버에 요청하도록 되어있음을 인지한 상태이다.
+- 프록시 캐시 서버가 웹 브라우저에 응답하는데(public 캐시를 응답), 이는 미국에 있는 원 서버보다 응답 속도가 빠르다.
+
+# 캐시 무효화
+- 캐시를 적용하지 않아도 GET 요청의 경우에는 웹 브라우저가 임의로 캐시를 하기도 한다.
+- 캐시 방지를 확실하게 하기 위한 캐시 무효화 응답
+  - **Cache-Control: no-cache, no-store, must-revalidate**
+  - **Pragma: no-cache**
+
+## no-cache와 must-revalidate를 왜 같이 써야할까?
+- 순간 네트워크 단절 등의 이유로 origin 서버에 접근이 불가능해지면
+  - no-cache는 캐시 서버 설정에 따라 캐시 데이터를 반환할 수 있다. 즉, 브라우저 캐시 내의 오래된 데이터라도 반환할 수 있다.
+    - Error or 200 OK
+  - must-revalidate는 항상 오류가 발생해야 한다.
+    - 504 Gateway Timeout
