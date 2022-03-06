@@ -101,3 +101,14 @@ gem install bundler
 rbenv -v
 ```
 를 실행하면 된다.
+
+# 기타 어플리케이션 설치
+## rectangle (무료)
+윈도우를 쓰면서 애용했던 기능이 화면 분할이다. 왼쪽으로 창을 끌어서 모서리에 마우스 포인터가 부딪히면 딱 화면의 반 정도 되는 크기로 왼쪽에 정렬되는 그런 기능(이름이 기억이 안 난다). 맥에서는 특별히 설치한 게 없으면 전체화면으로 반반씩 나눠쓰는 그런 식으로 해야하는 것 같았다.  
+그래서 찾아본 게 [rectangle](https://rectangleapp.com/)이다.
+
+기능은 아래 이미지와 같다.
+![rectangle_function](/assets/images/page/etc/2022-03-06_rectangle_func.png)
+
+키보드로 할 수 있을 뿐만 아니라 마우스로 끌어다가 사용하는 것도 된다.  
+비슷한 어플리케이션으로 spectacle도 있는데, 업데이트를 안 한지가 꽤 됐다고 하고, spectacle의 확장 버전이 rectangle이라고 해서 선택했다.
