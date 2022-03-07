@@ -11,7 +11,7 @@ tag:
   - 깃
 toc: true
 toc_sticky: true
-last_modified_at: 2022-03-06T00:00:00+09:00
+last_modified_at: 2022-03-07T00:00:00+09:00
 ---
 맥북을 새로 사서 웬만한 개발 관련된 건 이제 여기서 하려고 한다. 
 
@@ -112,3 +112,23 @@ rbenv -v
 
 키보드로 할 수 있을 뿐만 아니라 마우스로 끌어다가 사용하는 것도 된다.  
 비슷한 어플리케이션으로 spectacle도 있는데, 업데이트를 안 한지가 꽤 됐다고 하고, spectacle의 확장 버전이 rectangle이라고 해서 선택했다.
+
+# 맥, iTerm 세팅
+
+> 참조 링크: https://subicura.com/mac/
+
+위 링크엔 맥에 대한 기본과 iTerm 세팅, 여러 플러그인 설치 등의 가이드가 적혀있다. 터미널은 터미널인 채로 냅두고 싶었던 생각이 바뀔 정도로 iTerm 세팅이 다양하다는 걸 봐서 결국엔 세팅을 바꿨다.  
+oh my zsh를 설치하고 .zshrc 설정이 뭔가 꼬였는지 iTerm 우측 하단에 `uname -m` 정보가 뜨지 않았다. 그래서 다시 삭제하고 재설치...
+
+## brew install vs brew install --cask
+위의 링크에서 뭔가 프로그램을 설치할 때 `brew install --cask` 명령어를 쓴다. 이게 그냥 `brew install`과 무슨 차이가 있는지 알아봤다.  
+cask는 brew의 확장 개념으로, GUI 기반 어플리케이션(ex. 크롬)까지도 설치할 수 있게 해준다고 한다. 그래서 뒤에 나오는 docker라든가, keka같은 GUI 프로그램을 설치할 때 `brew install --cask` 명령어를 쓴 것이다. 예전에는 `brew cask install`라고 썼다고 한다.
+
+# 세팅 후
+▼ iTerm
+![iTerm](/assets/images/page/etc/2022-03-07_zsh.png)
+
+▼ SpaceVim
+![SpaceVim](/assets/images/page/etc/2022-03-07_spacevim.png)
+
+참고로 oh my zsh는 vscode에서 연 터미널에도 유효하다.
