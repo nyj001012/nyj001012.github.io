@@ -2,7 +2,7 @@
 title: "[42서울] 4주간의 라피신 후기"
 excerpt: ""
 category: 
-  - etc
+  - 42_seoul
 author_profile: true
 sidebar:
   - nav: "main" 

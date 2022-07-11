@@ -2,7 +2,7 @@
 title: "[42서울] 온라인 테스트, 체크인 미팅, 라피신 등록"
 excerpt: ""
 category: 
-  - etc
+  - 42_seoul
 author_profile: true
 sidebar:
   - nav: "main" 
