@@ -1,6 +1,6 @@
 ---
-title: "멘토링: 협업, 시간 관리, 프로젝트에 대하여"
-excerpt: "2022-09-27 w/ 배권한 멘토"
+title: "멘토링: 협업, 시간 관리, 프로젝트에 대하여 - 배권한 멘토"
+excerpt: "멘토링 일자: 2022-09-27"
 category: 
   - 42_seoul
 author_profile: true
