@@ -27,7 +27,7 @@ last_modified_at: 2022-10-19T00:00:00+09:00
 
 ```sql
 CREATE TABLE `order`(
-	id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     userId INT NOT NULL,
     item VARCHAR(14) NOT NULL,
     price INT NOT NULL,
@@ -105,7 +105,7 @@ SELECT `order`.id as orderNo,
 
 ![inner_join](/assets/images/page/web/2022-10-18_inner_join.png)
 
-여기서 주목할 점은 `user` 테이블에 저장된 3번 유저의 데이터는 조회되지 않았다는 점이다. 왜냐하면 `ON user.id = order.userId` 조건에 걸렸기 때문이다.
+여기서 주목할 점은 `user` 테이블에 저장된 3번 유저의 데이터는 조회되지 않았다는 점이다. 왜냐하면 `order` 테이블에는 3번 유저와 관련된 데이터가 없기 때문이다.
 
 ## INNER JOIN in TypeORM
 이걸 TypeORM을 이용하여 JSON 형식으로 가져오도록 하겠다. `app.ts`를 다음과 같이 작성한다.
@@ -134,12 +134,12 @@ app.use(express.json());
 app.get("/order", async function (req: Request, res: Response) {
     // INNER JOIN
     const orders = await myDataSource.createQueryBuilder("order", "o")
-                                        .innerJoin("user", "u", "o.userId = u.id")
-                                        .select(["o.id", "orderNo")
-                                        .addSelect("CONCAT(u.lastName, ' ', u.firstName)", "orderer")
-                                        .addSelect("o.item", "item")
-                                        .addSelect("o.price", "price")
-                                        .getRawMany();
+                                     .innerJoin("user", "u", "o.userId = u.id")
+                                     .select(["o.id", "orderNo")
+                                     .addSelect("CONCAT(u.lastName, ' ', u.firstName)", "orderer")
+                                     .addSelect("o.item", "item")
+                                     .addSelect("o.price", "price")
+                                     .getRawMany();
     return res.json(orders);
 });
 
@@ -167,8 +167,8 @@ INNER JOIN이 교집합이라면, OUTER JOIN은 합집합의 개념이다. OUTER
 ```sql
 SET FOREIGN_KEY_CHECKS = 0; // FOREIGN_KEY 제약 조건 임시 해제, 활성화 하려면 값 1
 INSERT INTO `order`
-	   (userId, price, item)
-	   VALUES (4, 9999, "오류!"); 
+       (userId, price, item)
+       VALUES (4, 9999, "오류!"); 
 ```
 
 이렇게 하면 user 테이블에 id가 4인 데이터가 없음에도 불구하고 `order`테이블에 위의 데이터가 정상적으로 들어간다.
@@ -178,9 +178,10 @@ INSERT INTO `order`
 이제 아래의 SQL문을 실행해보자. 먼저 `order` 테이블이 중점인 LEFT JOIN을 해보도록 하겠다.
 
 ```sql
-SELECT * FROM `order` o
-         LEFT OUTER JOIN user u
-         ON o.userId = u.id;
+SELECT * 
+       FROM `order` o
+       LEFT OUTER JOIN user u
+       ON o.userId = u.id;
 ```
 이때 결과가 어떻게 나올까? 바로 아래와 같이 나온다.
 
@@ -192,9 +193,10 @@ LEFT OUTER JOIN 일 때, OUTER JOIN이라는 글자를 기준으로 왼쪽에 �
 그렇다면 반대로 RIGHT OUTER JOIN을 한다면 어떻게 될까? 예상컨대 `user` 테이블에만 데이터가 있고 `order` 테이블에는 데이터가 없는 경우, `order` 테이블의 값에 NULL이 채워진 결과가 나올 것이다.
 
 ```sql
-SELECT * FROM `order` o
-         RIGHT OUTER JOIN user u
-         ON o.userId = u.id;
+SELECT *
+       FROM `order` o
+       RIGHT OUTER JOIN user u
+       ON o.userId = u.id;
 ```
 
 ![right_outer_join](/assets/images/page/web/2022-10-19_right_outer_join.png)
@@ -206,10 +208,10 @@ SELECT * FROM `order` o
 
 ```sql
 SELECT u.*
-	   FROM user u
-	   LEFT OUTER JOIN `order` o
-	   ON o.userId = u.id
-	   WHERE ISNULL(o.id) //o.id가 NULL인 것만!
+       FROM user u
+       LEFT OUTER JOIN `order` o
+       ON o.userId = u.id
+       WHERE ISNULL(o.id) //o.id가 NULL인 것만!
 ```
 위의 쿼리를 실행하면, 아래와 같은 데이터가 출력된다.
 
@@ -220,13 +222,13 @@ SELECT u.*
 
 ```typescript
 app.get("/customers/new", async function (req: Request, res: Response) {
-	// LEFT OUTER JOIN
-	const newCustomers = await myDataSource.createQueryBuilder("user", "u")
-										   .leftJoin("order", "o", "u.id = o.userId")
-										   .select("u.*")
-										   .where("ISNULL(o.id)")
-										   .getRawMany();
-	return res.json(newCustomers);
+  // LEFT OUTER JOIN
+  const newCustomers = await myDataSource.createQueryBuilder("user", "u")
+                                         .leftJoin("order", "o", "u.id = o.userId")
+                                         .select("u.*")
+                                         .where("ISNULL(o.id)")
+                                         .getRawMany();
+  return res.json(newCustomers);
 });
 ```
 
