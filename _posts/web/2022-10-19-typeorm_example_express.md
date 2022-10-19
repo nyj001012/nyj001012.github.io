@@ -25,7 +25,7 @@ TypeORM은 NodeJS, Browser, Cordova, PhoneGap, Ionic, React Native, NativeScript
 TypeORM은 현재 존재하는 다른 모든 JavaScript ORM들과는 다르게, [Active Record 패턴과 Data Mapper 패턴](https://velog.io/@koreanhole/Active-Record%ED%8C%A8%ED%84%B4%EA%B3%BC-Data-Mapper-%ED%8C%A8%ED%84%B4) 모두를 지원합니다. 이는 **높은 퀄리티의, 느슨하게 연결된, 확장 가능한, 지속 가능한 프로그램을 가장 생산적인 방식으로 작성**할 수 있음을 의미합니다.
 
 ## Example using TypeORM with Express
-패키지 매니저로 **yarn**을, DB로 **MySQL2**를, DBMS로 MySQL Workbench를, 그리고 **express**를 사용하여 튜토리얼을 진행하도록 하겠다. 특별히 이와 같이 구성한 이유는 
+패키지 매니저로 **yarn**을, DB로 **MySQL2**를, DBMS로 **MySQL Workbench**를, 그리고 **express**를 사용하여 튜토리얼을 진행하도록 하겠다. 특별히 이와 같이 구성한 이유는 
 내가 현재 42 서울에서 활동하고 있는 집현전에서 위와 같은 세팅으로 개발을 하고 있기 때문이다.
 
 ### 초기 설정
