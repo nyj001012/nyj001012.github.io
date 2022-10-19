@@ -397,7 +397,7 @@ query: COMMIT
 
 여기서 하나 특이한 점이 있다. 바로 내가 처음 `user` 테이블을 만들 때, 스키마를 정의하는 과정에서 firstName은 10글자, lastName은 2글자로 글자수 제한을 걸어뒀었다. 그런데 어떻게 그보다 더 긴 길이의 데이터가 insert 되었을까? 바로 `app-data-source.ts`에서 지정한 `synchronize: true` 속성 때문이다.  
 
-`synchronize` 옵션은 어플리케이션을 작동할 때마다 데이터베이스 스키마를 자동으로 생성해야 할지를 결정한다. 그래서인지 공식문서에서는 디버그와 개발 중에는 유용하게 쓸 수 있지만, 상업용(in production)에서는 사용에 주의를 요한다고 적혀있다. 그 대안으로 CLI와 run schema:sync 커맨드를 쓸 수 있다고 한다.
+`synchronize` 옵션은 어플리케이션을 작동할 때마다 데이터베이스 스키마를 자동으로 생성해야 할지를 결정한다. 그래서인지 공식문서에서는 디버그와 개발 중에는 유용하게 쓸 수 있지만, 프로덕션 모드(in production)에서는 사용에 주의를 요한다고 적혀있다. 그 대안으로 CLI와 run schema:sync 커맨드를 쓸 수 있다고 한다.
 
 그리고 데이터베이스를 확인해보니까 `synchronize: true` 속성에 의해 firstName과 lastName의 스키마에서 데이터 타입 부분이 전부 varchar(255)로 바뀌어있었다. 그런데 "/users/register" 에서는 칼같이 insert를 막았다. 아무래도 insert 명령으로는 스키마가 바뀌지 않도록 해놓은 듯 하다.
 
