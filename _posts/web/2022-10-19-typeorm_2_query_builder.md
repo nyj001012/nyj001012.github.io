@@ -44,13 +44,13 @@ import { myDataSource } from "../app-data-source"
 
 // 데이터베이스 연결
 myDataSource
-	.initialize()
-	.then(() => {
-		console.log("Data Source has been initialized!")
-	})
-	.catch((err) => {
-		console.error("Error during Data Source initialization:", err)
-	});
+    .initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!")
+    })
+    .catch((err) => {
+        console.error("Error during Data Source initialization:", err)
+    });
 
 // express 생성 및 설정
 const app = express();
@@ -58,75 +58,73 @@ app.use(express.json());
 
 // 라우터
 app.get("/users/register", async function (req: Request, res: Response) {
-	const values = [
-		{
-			firstName: "이름",
-			lastName: "성"
-		},
-		{
-			firstName: "glish",
-			lastName: "En"
-		}
-	];
-	myDataSource.createQueryBuilder()
-		.insert()
-		.into(User)
-		.values(values)
-		.execute();
-	return res.redirect("/users");
+    const values = [
+        {
+            firstName: "이름",
+            lastName: "성"
+        },
+        {
+            firstName: "glish",
+            lastName: "En"
+        }
+    ];
+    myDataSource.createQueryBuilder()
+                .insert()
+                .into(User)
+                .values(values)
+                .execute();
+    return res.redirect("/users");
 });
 
 app.get("/users/update/:id", async function (req: Request, res: Response) {
-	const id = req.params.id;
-	myDataSource.createQueryBuilder()
-		.update(User)
-		.set({ "firstName": "Updated" })
-		.where("id = :id", { id: id })
-		.execute();
-	return res.redirect("/users/" + id);
+    const id = req.params.id;
+    myDataSource.createQueryBuilder()
+                .update(User)
+                .set({ "firstName": "Updated" })
+                .where("id = :id", { id: id })
+                .execute();
+    return res.redirect("/users/" + id);
 });
 
 app.get("/users/leave/:id", async function (req: Request, res: Response) {
-	await myDataSource.createQueryBuilder()
-			.delete()
-			.from(User)
-			.where("id = :id", { id: req.params.id })
-			.execute();
-	return res.redirect("/users");
+    await myDataSource.createQueryBuilder()
+                      .delete()
+                      .from(User)
+                      .where("id = :id", { id: req.params.id })
+                      .execute();
+    return res.redirect("/users");
 });
 
 app.get("/users/count", async function (req: Request, res: Response) {
-	const count = await myDataSource.createQueryBuilder()
-					.select()
-					.from(User, "user")
-					.getCount();
-	return res.json(count);
+    const count = await myDataSource.createQueryBuilder()
+                                    .select()
+                                    .from(User, "user")
+                                    .getCount();
+    return res.json(count);
 });
 
 app.get("/users/:id", async function (req: Request, res: Response) {
-	const name = await myDataSource.createQueryBuilder()
-					.select(["user.firstName", "user.lastName"])
-					.from(User, "user")
-					.where("user.id = :id", { id: req.params.id })
-					.getOne();
-	return res.json(name);
+    const name = await myDataSource.createQueryBuilder()
+                                   .select(["user.firstName", "user.lastName"])
+                                   .from(User, "user")
+                                   .where("user.id = :id", { id: req.params.id })
+                                   .getOne();
+    return res.json(name);
 });
 
 app.get("/users", async function (req: Request, res: Response) {
-	const users = await myDataSource.createQueryBuilder()
-					.select()
-					.from(User, "user")
-					.orderBy("user.id", "DESC")
-					.getRawMany();
-	return res.json(users);
+    const users = await myDataSource.createQueryBuilder()
+                                    .select()
+                                    .from(User, "user")
+                                    .orderBy("user.id", "DESC")
+                                    .getRawMany();
+    return res.json(users);
 });
 
 // start express server
 app.listen(3000);
 
 ```
-
-~~줄맞춤 악랄한 거 보소~~
 
 여기서는 Repository API를 사용했을 때와 비슷한 동작을 하기 때문에, 실행 화면과 쿼리문은 건너뛰겠다. 대신 쓰인 함수에 대해서만 간략하게 적어놓도록 하겠다.
 
