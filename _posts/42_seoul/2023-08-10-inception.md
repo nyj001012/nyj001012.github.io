@@ -10,7 +10,7 @@ tag:
   - 42서울
 toc: true
 toc_sticky: true
-last_modified_at: 2023-08-10T00:00:00+09:00
+last_modified_at: 2023-08-12T00:00:00+09:00
 ---
 
 # 왜 Alpine Linux인가?
