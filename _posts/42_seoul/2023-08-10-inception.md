@@ -10,7 +10,7 @@ tag:
   - 42서울
 toc: true
 toc_sticky: true
-last_modified_at: 2023-08-12T00:00:00+09:00
+last_modified_at: 2023-08-13T00:00:00+09:00
 ---
 
 # 왜 Alpine Linux인가?
@@ -160,6 +160,72 @@ docker version
 
 ![docker_setting_complete](/assets/images/page/42_seoul/2023-08-12_docker_setting_complete.png)
 
+# docker-compose
+> 공식 문서: <https://docs.docker.com/compose/gettingstarted/>
+
+## 파일 구성
+> 공식 문서: <https://docs.docker.com/compose/compose-file/compose-file-v3/>
+
+docker-compose의 파일 예시를 봤는데, 궁금한 점이 있어서 찾아보고 정리했다.
+
+### version
+.yml 파일 보면 맨 첫 줄에 항상
+
+```yml
+version: '3.8'
+```
+
+이런 식으로 적혀 있는 걸 봤는데, 이는 compose 파일의 버전이다. 도커 버전에 맞는 compose 파일의 버전을 명시해야 하며, version 1.x와 2.x, 3.x가 구성 파일의 매개 변수가 삭제되었거나 추가된 것들이 있다. 해당 내용은 [Docker Compose와 버전별 특징
+](https://meetup.nhncloud.com/posts/277)을 참고하면 좋을 것 같다.
+
+### services
+compose 파일은 서비스 이름의 문자열 표현을 키로, 서비스 정의를 값으로 하는 맵으로 선언되어야 한다. 서비스 정의에는 각 서비스 컨테이너에 적용되는 구성이 포함된다.
+
+각 서비스에는 반드시 서비스의 도커 이미지를 어떻게 생성할지를 정의한 `build` 섹션이 있어야 한다.
+
+그 외에 services에 정의할 수 있는 섹션은 아래와 같다.
+- build: [Compose Build Specification](https://docs.docker.com/compose/compose-file/build/)에 정의된 대로 소스를 컨테이너 이미지로 만들기 위한 빌드 설정을 정의한다.
+
+이 내용들과 Docker hub에서 패키지들의 "... via docker-compose or docker stack deploy" 섹션을 토대로 작성한 내용은 다음과 같았다.
+
+```yml
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./templates:/etc/nginx/templates
+    ports:
+      - 8080:80
+    environment:
+      - NGINX_HOST=foobar.com
+      - NGINX_PORT=80
+  
+  mariadb:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8000:80
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+```
+
+그리고 `docker-compose up`을 해 보니 이미지 생성은 전부 잘 됐다.
+
+### volumes
+
+### .env
+
 # 알파인 리눅스를 사용하며 배운 것
 ## sudo, usermod 없음
 > 참고: [How do I add a user when I'm using Alpine as a base image?
@@ -185,6 +251,27 @@ addgroup [USERNAME] docker
 groups [USERNAME]
 ```
 
+## 그룹 관리를 더 편하게 할 수 있도록 도와주는 gpasswd
+
+> 참고: [리눅스-gpasswd 명령어](https://m.blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=jsky10503&logNo=220743902613)
+
+`/etc/group`과 `/etc/gshadow`를 관리한다.ㄴ
+
+```shell
+# gpasswd를 사용하기 위한 패키지
+apk add --no-cache shadow
+```
+
+### 그룹에 유저 추가
+```shell
+gpasswd -a [USER] [GROUP]
+```
+
+### 그룹에서 유저 삭제
+```shell
+gpasswd -d [USER] [GROUP]
+```
+
 ## apk trust host 인증서 문제 해결법
 > 참고: [Alpine Linux - apk trust host 인증서 문제 해결
 ](https://asecurity.dev/entry/Alpine-Linux-apk-trust-host-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
@@ -196,3 +283,25 @@ sed 's/https/http/g' -i /etc/apk/repositories
 ```
 
 도커 이미지에 위의 내용을 RUN 한 후, `apk add/update`를 RUN 한다.
+
+## ssh 설정
+ssh를 설정할 때 Born2beroot와는 다른 점이 몇 가지 있어서 그 점을 정리하려 한다.
+
+기본적인 세팅은 [Born2beroot를 마치고 - ssh](./2022-12-12-born2beroot.md/#ssh) 부분부터 포트 포워딩까지와 같다.
+
+### /etc/ssh/sshd_config
+vim으로 해당 파일을 설정할 때 `#Port 22` 부분을 주석 해제하고 포드 번호를 지정하는 건 같다.
+
+그리고 `PermitRootLogin` 부분은 `setup-alpine` 명령어를 실행했을 때 루트 로그인 제한할거냐는 물음에 no라고 답했기 때문에 건드리지 않았다.
+
+### ssh 재시작
+```shell
+/etc/init.d/sshd restart
+```
+
+데비안 때에는 `systemctl`로 재시작 했는데, 이 부분이 달랐다.
+
+### + ip 설정 따로 안 했음
+이번에는 고정 ip를 사용해서 하지 않았기 때문에 ssh로 UTM에서 네트워크 설정에서 ip를 따로 입력해주지 않았고 포트만 4242->4242로만 해줬다.
+
+마찬가지로 터미널에서 ssh로 접속할 때에도 `user@127.0.0.1` 같이 ip를 직접 지정해주지 않고 `user@localhost`와 같은 방식을 사용했다.
