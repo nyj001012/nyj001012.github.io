@@ -191,6 +191,21 @@ rc-update add lightdm
 rc-service lightdm start
 ```
 
+## chrome 설치
+> 참고: [How to Install Google Chrome on Alpine Linux
+](https://linuxhint.com/install-google-chrome-alpine-linux/)
+
+```shell
+# 크롬 설치
+apk add chromium
+```
+
+![chrome](/assets/images/page/42_seoul/2023-08-14_chrome.png)
+
+화면 맨 밑 메뉴에서 지구본 모양 클릭 후 chromium 선택
+
+만약 I/O Error로 실행 실패했다면, 재시작 후 다시 실행
+
 # docker-compose
 > 공식 문서: <https://docs.docker.com/compose/gettingstarted/>
 
