@@ -31,5 +31,8 @@ last_modified_at: 2023-08-14T00:00:00+09:00
 # docker-compose
 [[Inception] docker-compose 작성](/42_seoul/inception_docker_compose/)
 
+# mariadb
+[[Inception] mariadb 설치](/42_seoul/inception_mariadb/)
+
 # 알파인 리눅스를 사용하며 배운 것
 [[Inception] 알파인 리눅스를 사용하며 배운 것](/42_seoul/learn_alpine/)
