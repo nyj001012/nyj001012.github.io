@@ -47,6 +47,9 @@ apk add --no-cache make
 
 # vim 추가
 apk add --no-cache vim
+
+# Makefile 을 위한 make 추가
+apk add --no-cache make
 ```
 
 ## Docker 설치
