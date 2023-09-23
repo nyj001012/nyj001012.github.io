@@ -10,7 +10,7 @@ tag:
   - 42서울
 toc: true
 toc_sticky: true
-last_modified_at: 2023-09-15T00:00:00+09:00
+last_modified_at: 2023-09-23T00:00:00+09:00
 ---
 
 # 왜 Alpine Linux인가?
@@ -36,3 +36,6 @@ last_modified_at: 2023-09-15T00:00:00+09:00
 
 # 알파인 리눅스를 사용하며 배운 것
 [[Inception] 알파인 리눅스를 사용하며 배운 것](/42_seoul/learn_alpine/)
+
+# Ubuntu
+[[Inception] 결국 Ubuntu로 갈아타다..!](/42_seoul/inception_ubuntu/)
