@@ -51,6 +51,26 @@ docker volume rm VOLUME   # VOLUME 삭제
 
 아무리 구글링을 해도 이 문제에 대해 자료가 많이 나오지 않는 걸 보면 이유가 있지 않을까..? GPT도 모르던데.
 
+## listen tcp 0.0.0.0:3306:bind:address already in use
+> 참고: [Error starting userland proxy: listen tcp 0.0.0.0:3306: bind: address already in use](https://stackoverflow.com/questions/37896369/error-starting-userland-proxy-listen-tcp-0-0-0-03306-bind-address-already-in)
+이건 3306 포트를 누가 이미 점유하고 있다는 에러다. 해결 방법은 3306 포트를 누가 쓰고 있는지를 확인한 후, 그 프로세스를 종료시키면 된다.
+
+### 방법 1. lsof 이용
+```
+lsof -i :3306
+kill PID
+```
+
+### 방법 2. netstat 이용
+```
+sudo netstat -nlpt | grep 3306
+kill PID
+```
+
+```
+sudo service mysql stop
+```
+
 # Docker image
 ## nginx 이미지를 만드는데 자꾸 pull layer를 한다
 내가 docker image를 만드는데 자꾸 Dockerfile의 COPY 명령어도 제대로 수행이 안 되고, 터미널에 pull layer [1/8...] 이런 식으로 레이어를 pull한다는 내용이 출력되었다. 그래서 원인을 찾아 나섰는데, 이유는 docker compose 파일에 있었다.
