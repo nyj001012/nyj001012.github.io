@@ -67,6 +67,7 @@ sudo netstat -nlpt | grep 3306
 kill PID
 ```
 
+### 방법 3. mysql 종료
 ```
 sudo service mysql stop
 ```
