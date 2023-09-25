@@ -44,3 +44,4 @@ last_modified_at: 2023-09-25T00:00:00+09:00
 [[Inception] Inception을 진행하며 맞닥뜨린 에러들](/42_seoul/inception_errors/)
 
 # 평가 대비 알아두면 좋은 것들
+[[Inception] 평가 대비 알아두면 좋은 것들](/42_seoul/inception_evaluation/)
