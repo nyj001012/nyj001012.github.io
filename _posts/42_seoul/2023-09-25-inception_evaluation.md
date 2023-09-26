@@ -100,3 +100,22 @@ volumes:
     o: bind
 ```
 일 경우, 볼륨을 생성하지 않고 컨테이너와 호스트 간 파일을 공유하기 때문에 호스트 파일 시스템의 특정 경로를 컨테이너 내부 경로와 바인드한다. 즉, 호스트 측의 볼륨과 컨테이너 내부 볼륨이 동기화되어 호스트에서 볼륨에 파일을 추가하면 컨테이너 내부 볼륨에도 파일이 추가된다.
+
+# 알파인 리눅스
+> 참고: <https://alpinelinux.org/about/>
+
+## 알파인 리눅스의 경량화 방식
+> Alpine Linux is built around musl libc and busybox. This makes it small and very resource efficient.
+
+알파인 리눅스는 musl libc와 busybox로 빌드되었다고 한다. 덕분에 용량이 작고 자원을 효율적으로 사용할 수 있다고 한다.
+
+그 둘의 역할로 알파인 리눅스는 많이 사용하는 명령어 또는 옵션만 추려내어 사용하는 방식으로 경량화를 했다고 한다.
+
+### musl libc
+> 참고: <https://musl.libc.org/>
+musl libc는 Linux system call API 상위에 구현된 C 표준라이브러리로, POSIX를 기반으로 한다.
+
+### busybox
+> 참고: <https://busybox.net/about.html>
+BusyBox는 많은 공통 UNIX 유틸리티의 버전들을 하나의 작은 실행가능한 파일로 합친 것이다. BusyBox에 있는 유틸리티들은 일반적으로는 모든 기능을 갖춘 GNU 계통보다 적은 옵션을 갖고 있지만, 그 옵션들은 사용자가 기대한(expected) 기능을 제공하고 GNU와 비슷하게 동작한다.  
+BusyBox는 작은 시스템 또는 임베디드 시스템에 상당히 완전한 환경을 제공한다.
