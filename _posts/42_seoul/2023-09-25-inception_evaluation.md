@@ -117,5 +117,6 @@ musl libc는 Linux system call API 상위에 구현된 C 표준라이브러리�
 
 ### busybox
 > 참고: <https://busybox.net/about.html>
+
 BusyBox는 많은 공통 UNIX 유틸리티의 버전들을 하나의 작은 실행가능한 파일로 합친 것이다. BusyBox에 있는 유틸리티들은 일반적으로는 모든 기능을 갖춘 GNU 계통보다 적은 옵션을 갖고 있지만, 그 옵션들은 사용자가 기대한(expected) 기능을 제공하고 GNU와 비슷하게 동작한다.  
 BusyBox는 작은 시스템 또는 임베디드 시스템에 상당히 완전한 환경을 제공한다.
