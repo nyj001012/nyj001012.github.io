@@ -11,7 +11,7 @@ tag:
   - Inception
 toc: true
 toc_sticky: true
-last_modified_at: 2023-09-26T00:00:00+09:00
+last_modified_at: 2023-10-03T00:00:00+09:00
 ---
 
 # ssh 설정
@@ -83,6 +83,16 @@ ENTRYPOINT ["app"]
 그런데 그냥 /etc/hosts에 있는 내용을 바꿔주기만 하면 DNS에 접근하지 않더라도 도메인 이름을 사용할 수 있었다.
 
 # docker-compose.yml
+## version
+### 만약 version이 3이라면 어떻게 될까?
+만약 docker compose version을 3이라고 명시하면 도커는 어떤 버전으로 인식할까?
+
+```yml
+version: '3'
+```
+
+`version: 3`일 경우, `3.x` 버전을 의미하므로 메이저 버전이 3인 것 중 가장 최신 버전이 적용된다.
+
 ## volumes
 ### driver_opts
 특정 볼륨 드라이버에 대한 구성 옵션을 설정하는 데 사용한다.
@@ -100,6 +110,68 @@ volumes:
     o: bind
 ```
 일 경우, 볼륨을 생성하지 않고 컨테이너와 호스트 간 파일을 공유하기 때문에 호스트 파일 시스템의 특정 경로를 컨테이너 내부 경로와 바인드한다. 즉, 호스트 측의 볼륨과 컨테이너 내부 볼륨이 동기화되어 호스트에서 볼륨에 파일을 추가하면 컨테이너 내부 볼륨에도 파일이 추가된다.
+
+# nginx
+## nginx란?
+> 참고: [What Is NGINX?](https://www.nginx.com/resources/glossary/nginx/)
+
+> 한 마디로 정리하자면 빠르고 효율적으로 자원을 사용하는 웹 서버
+
+**NGINX**는 웹 서빙, 리버스 프록싱, 캐싱, 로드 밸런싱, 미디어 스트리밍 등을 위한 오픈 소스 소프트웨어이다.  
+HTTP 서버 기능 뿐만 아니라 NGINX는 이메일을 위한 프록시 서버와 리버스 프록시, 그리고 HTTP, TCP, UDP 서버의 로드 밸런서 기능도 수행할 수 있다.
+
+### 웹 서버로써의 NGINX
+NGINX의 목표는 가장 **빠른** 웹 서버를 만들고 그 우수함을 유지하는 것이다. NGINX는 아파치(Apache)와 기타 다른 서버들보다 웹 서버 성능 측정 벤치마크에서 꾸준히 좋은 성적을 보여주고 있다.  
+
+### 웹 서빙을 넘어선 NGINX
+NGINX는 흔히 리버스 프록시와 로드 밸런서로 사용되며 들어오는 트래픽을 관리하고 그 트래픽을 더 느린 상위 서버로 분배한다.  
+
+NGINX는 클라이언트와 두 번째 웹 서버 사이에 자주 배치되어 SSL/TLS 단말기 또는 웹 가속기의 역할을 한다(그래서 이번 Inception 과제에서는 SSL 세팅을 NGINX에서 한다).  
+Node.js부터 PHP까지 어느 언어로 빌드된 동적 웹사이트라도 일반적으로 NGINX를 콘텐트 캐시와 리버스 프록시로써 배포한다. 이는 어플리케이션 서버로의 로드(load)를 줄이고 하드웨어를 가장 효율적으로 사용하게끔 한다.
+
+# php-fpm
+## PHP
+> 참고: <https://www.php.net/manual/en/intro-whatis.php>
+
+PHP는 널리 사용되는 오픈 소스 범용 스크립팅 언어이며, 특히 웹 개발에 적합하고 HTML에 같이 사용할 수 있다.
+
+## CGI
+> 참고: [공용 게이트웨이 인터페이스](https://ko.wikipedia.org/wiki/%EA%B3%B5%EC%9A%A9_%EA%B2%8C%EC%9D%B4%ED%8A%B8%EC%9B%A8%EC%9D%B4_%EC%9D%B8%ED%84%B0%ED%8E%98%EC%9D%B4%EC%8A%A4)
+
+CGI(Common Gateway Interface)는 웹 서버 상에서 사용자 프로그램을 동작시키기 위한 조합으로, 서버 프로그램과 외부 프로그램과의 연계법을 정한 것이다.
+
+CGI는 인터페이스로, 특정 플랫폼에 의존하지 않기 때문에 프로그램 본체를 CGI로 부르는 것은 잘못된 것이다.
+
+쉽게 말해서 서버에서 사용자 요청을 받아 데이터를 동적으로 생성하고 클라이언트에 보내주기 위해 외부 프로그램에서 서버와 어떻게 협업할 것인지를 정해놓은 것 같다.
+
+## FPM(FastCGI Process Manager)
+> 참고: [FastCGI Process Manager (FPM)](https://www.php.net/manual/en/install.fpm.php)
+FPM은 무거운 사이트에 유용한 것들을 담고 있는 주요 PHP FastCGI 구현체이다.  
+FPM에는 다음과 같은 것들이 포함되어 있다.
+
+- 안정적인(graceful) 멈춤/시작으로 높은 수준의 프로세스 관리
+- 다른 uid/gid/chroot/environment를 가지며, 다른 php.ini를 사용하고 다른 포트를 수신하는 작업자(worker)를 시작할 수 있는 풀 (안전 모드를 대체한다)
+- 설정 가능한 stdout과 stderr 로깅
+- 갑작스러운 opcode 캐시 파괴로 인한 긴급 재시작
+- 업로드 지원 가속
+- slowlog
+- fastcgi_finish_request
+- 동적/요청에 따른/정적 자식 생성
+- 다양한 형식을 지원하는 기본적이고 확장된 스테이터스 정보
+- php.ini
+
+# wordpress
+## wordpress란?
+> 참고: [워드프레스](https://ko.wikipedia.org/wiki/%EC%9B%8C%EB%93%9C%ED%94%84%EB%A0%88%EC%8A%A4)
+
+워드프레스는 세계 최대의 자유 오픈 소프트웨어 저작물 관리 시스템이다.  
+PHP로 작성되었고, MySQL이나 MariaDB가 주로 사용된다.
+
+# mariaDB
+## 왜 MySQL과 MariaDB는 명령어가 똑같고, 사람들이 혼용하는걸까?
+> 참고: [MariaDB](https://ko.wikipedia.org/wiki/MariaDB)
+
+MariaDB가 MySQL을 기반으로 만들어졌고, MySQL API와 명령에 정확히 매칭하여 교체 가능성을 높이려 했기 때문에 둘은 높은 호환성을 가지고 있다. 그래서 사용방법에 구조에 엔진까지 거의 동일하게 사용하고 있다. 
 
 # 알파인 리눅스
 > 참고: <https://alpinelinux.org/about/>
