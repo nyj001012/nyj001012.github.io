@@ -1,6 +1,6 @@
 ---
-title: "inception"
-excerpt: "inception 과제 하면서 정리한 것들"
+title: "Inception"
+excerpt: "Inception 과제 하면서 정리한 것들"
 category: 
   - 42_seoul
 author_profile: true
@@ -11,7 +11,7 @@ tag:
   - Inception
 toc: true
 toc_sticky: true
-last_modified_at: 2023-09-25T00:00:00+09:00
+last_modified_at: 2023-10-03T00:00:00+09:00
 ---
 
 # 왜 Alpine Linux인가?
