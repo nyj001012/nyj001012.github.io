@@ -210,6 +210,43 @@ bind(serv_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 ```
 
 ## TCP 기반 서버/클라이언트
+### TCP/IP 프로토콜 스택
+![tcp_ip_protocol_stack](../../assets/images/page/42_seoul/2023-10-29_tcpip_protocol_stack.png)
+
+- LINK 계층: 네트워크 표준과 관련된 프로토콜을 정의하는 영역 (ex. 호스트 간의 물리적 연결)
+- IP 계층: 데이터 전송 경로를 선택하는 영역
+- TCP/UDP 계층(전송 계층): IP 계층에서 알려준 경로정보를 바탕으로 데이터의 실제 송수신을 담당
+- APPLICATION 계층: 소켓을 이용해서 무언가를 만드는 과정에서 클라이언트와 서버간의 데이터 송수신에 대한 규약을 정하는 영역
+
+### TCP 서버에서의 기본적인 함수호출 순서
+![tcp_server_call_order](/assets/images/page/42_seoul/2023-10-29_tcp_server_call_order.png)
+
+### 연결요청 대기상태로의 진입, `listen()`
+```cpp
+#include <sys/socket.h>
+
+int listen(int sock, int backlog);
+// 성공 시 0, 실패 시 -1 반환
+```
+
+- `sock`: 연결요청 대기상태에 두고자 하는 소켓의 파일 디스크립터, 이는 서버 소켓(리스닝 소켓)이 됨
+- `backlog`: 연결요청 대기 큐의 크기 정보로, 5로 지정하면 클라이언트의 연결요청을 5개까지 대기시킬 수 있음
+
+### 클라이언트의 연결요청 수락, `accept()`
+```cpp
+#include <sys/socket.h>
+
+int accept(int sock, struct sockaddr *addr, socklen_t *addrlen);
+// 성공 시 생성된 소켓의 파일 디스크립터, 실패 시 -1 반환
+```
+
+- `sock`: 서버 소켓의 파일 디스크립터
+- `addr`: 연결을 요청한 클라이언트의 주소 정보
+- `addrlen`: `addr`에 전달된 주소의 변수 크기를 바이트 단위로 전달, 단 크기 정보를 변수에 저장한 다음에 변수의 주소 값을 전달
+
+### TCP 기반 서버, 클라이언트의 함수호출 관계
+![server_client_flow](/assets/images/page/42_seoul/2023-10-29_server_client_flow.png)
+
 ## 소켓의 우아한 연결종료
 ## 소켓의 다양한 옵션
 ## 멀티프로세스 기반의 서버 구현
