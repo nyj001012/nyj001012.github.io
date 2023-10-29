@@ -108,7 +108,7 @@ struct sockaddr_in
 }
 ```
 
-- `sin_family`:
+- `sin_family`:  
   | 주소체계(Address Family) | 의미 |
   |:-----------------------|:----|
   | AF_INET | IPv4 인터넷 프로토콜에 적용하는 주소체계 |
