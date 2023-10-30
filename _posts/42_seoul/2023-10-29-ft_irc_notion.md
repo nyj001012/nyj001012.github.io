@@ -93,7 +93,7 @@ int socket(int domain, int type, int protocol);
 ### 사용 예시
 IPv4 인터넷 프로토콜 체계에서 동작하는 연결지향형 데이터 전송 소켓
 ```cpp
-int tcp_socket = socket(PF_INET, SOCK_STREAM, IPROTO_TCP);
+int tcp_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 ```
 
 ## 주소체계와 데이터 정렬
@@ -201,7 +201,7 @@ char *serv_port = "9190";
 serv_sock = socket(PF_INET, SOCK_STREAM, 0);
 
 /* 주소정보 초기화 */
-memset(&addr, 0, sizeof(serv_addr));
+memset(&serv_addr, 0, sizeof(serv_addr));
 serv_addr.sin_family = AF_INET;
 serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 serv_addr.sin_port = htons(atoi(serv_port));
