@@ -20,9 +20,42 @@ body {
 .sidebar::-webkit-scrollbar {
     display: none;
   }
-  
+
 /* Hide scrollbar for IE, Edge and Firefox */
 .sidebar {
 -ms-overflow-style: none;  /* IE and Edge */
 scrollbar-width: none;  /* Firefox */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #4b3d0d;
+}
+
+h1 {
+  margin: 1.8em 0 1em;
+}
+
+h2 {
+  margin: 1.5em 0 0.5em;
+}
+
+.page__content p {
+  line-height: 1.8;
+}
+
+.highlight, p>code, code {
+  font-family: "Source Code Pro", "Nanum Gothic";
+}
+
+p>code {
+  background: #555555;
+  color: gold;
+}
+
+blockquote {
+  border-left: 0.25em solid #ffc500;
+}
+
+blockquote > p {
+  font-size: 0.8em !important;
 }

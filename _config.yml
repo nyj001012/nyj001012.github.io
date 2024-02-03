@@ -103,10 +103,10 @@ analytics:
 # Site Author
 author:
   name             : "나예진"
-  avatar           : "assets/images/logo/welcome_mokoko.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar           : "/assets/images/logo/profile.jpeg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "1년차 삐약이\n\n피드백 절대 환영합니다 :D"
   location         : "대한민국"
-  email            :
+  email            : "nyj001012@gmail.com"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
