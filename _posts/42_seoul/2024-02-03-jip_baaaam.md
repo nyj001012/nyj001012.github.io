@@ -8,10 +8,9 @@ sidebar:
   - nav: "main" 
 tag:
   - 42서울
-  - Inception
 toc: true
 toc_sticky: true
-last_modified_at: 2024-02-03T00:00:00+09:00
+last_modified_at: 2024-03-15T00:00:00+09:00
 ---
 
 # 사건의 발단
