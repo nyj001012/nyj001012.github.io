@@ -235,6 +235,7 @@ plugins:
   - jekyll-gist
   - jekyll-feed
   - jekyll-include-cache
+  - jekyll-last-modified-at
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -306,3 +307,7 @@ defaults:
       layout: single
       author_profile: true
       show_date: true
+
+# Optional. The default date format, used if none is specified in the tag.
+last-modified-at:
+    date-format: '%y-%b-%d %H:%M:%S'
