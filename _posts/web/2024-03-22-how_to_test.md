@@ -2,7 +2,7 @@
 title: "초보를 위한 테스트 작성 요령"
 excerpt: "테스트는 어떻게 작성해야 할까?"
 category: 
-  - springboot
+  - web
 author_profile: true
 sidebar:
   - nav: "main" 
