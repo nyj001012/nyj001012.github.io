@@ -65,8 +65,3 @@ public class MemberController {
 - `/members` 리소스 GET 요청이 들어오면 실행
 - `memberService.findMembers()`로 멤버 목록 받아와서 `model`에 추가
 - 템플릿 파일에 `model`을 전달
-
-# 예시 화면
-
-https://github.com/nyj001012/nyj001012.github.io/assets/50291995/04e13eee-ac54-4513-bbda-ec180487e170
-
