@@ -8,6 +8,7 @@ sidebar:
   - nav: "main" 
 tag:
   - spring boot
+  - thymeleaf
   - 회원 관리 예제
 toc: true
 toc_sticky: true
@@ -32,6 +33,9 @@ public class HomeController {
 }
 ```
 
+- 홈(`/`)으로의 GET 요청을 처리하는 컨트롤러 추가
+- 요청이 오면 `home.html`을 렌더하도록 설정
+
 # 템플릿 추가
 ```html
 <!DOCTYPE html>
@@ -43,7 +47,7 @@ public class HomeController {
 <body>
 <h1>Hello Spring!</h1>
 <a href="/members/sign-up">회원 가입</a>
-<a href="/members/sign-in">로그인</a>
+<a href="/members">회원 목록</a>
 </body>
 </html>
 ```
