@@ -67,3 +67,6 @@ public class MemberController {
 - 템플릿 파일에 `model`을 전달
 
 # 예시 화면
+
+https://github.com/nyj001012/nyj001012.github.io/assets/50291995/04e13eee-ac54-4513-bbda-ec180487e170
+
