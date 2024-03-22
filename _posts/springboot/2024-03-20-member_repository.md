@@ -8,7 +8,7 @@ sidebar:
   - nav: "main" 
 tag:
   - spring boot
-  - thymeleaf
+  - 회원 관리 예제
 toc: true
 toc_sticky: true
 last_modified_at: 2024-03-22T00:00:00+09:00
