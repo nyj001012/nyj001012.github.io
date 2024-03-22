@@ -98,3 +98,8 @@ public class HelloController {
 - `public` 메서드이기 때문에, 모두에게 노출
   - 의도치 않은 변수로 바뀔 가능성 있음
   - `MemberService`의 경우 로드 시점에만 한 번만 할당하면 되기 때문에 위의 방식에 맞지 않음
+
+# 언제 사용하나?
+- 정형화되어 있지 않은 컨트롤러/서비스/리포지토리
+- 상황에 따라 구현 클래스를 다르게 해야할 때
+  - 예) `MemoryMemberRepository`를 `DBRepository`로 변경

@@ -51,6 +51,8 @@ public class HelloController {
 - `@Autowired`로 생성자를 정의하면, 스프링이 `MemberService`와 `HelloContainer`를 연결
   - 생성자가 하나라면 생략 가능
 - 스프링이 `MemberService`와 `HelloContainer`를 연결하기 위해서는, `MemberService`가 스프링 빈으로 등록되어 있어야 함
+  - `Bean`에 등록되지 않은 컴포넌트에 대해서는 `@Autowired`가 동작하지 않음
+    - 예) 내가 직접 `new MemberService()`를 만들고 할당할 경우
 
 ```java
 @Service
@@ -76,3 +78,6 @@ public class MemoryMemberRepository implements MemberRepository {
     // ...(생략)
 }
 ```
+
+# 언제 사용하나?
+- 정형화된 컨트롤러, 서비스, 리포지토리에 사용
