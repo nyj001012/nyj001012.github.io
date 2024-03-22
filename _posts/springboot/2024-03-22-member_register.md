@@ -1,7 +1,7 @@
 ---
 title: "회원 관리 예제 7 - 회원가입"
 excerpt: "웹 MVC 개발"
-category: ㄴ
+category:
   - springboot
 author_profile: true
 sidebar:
