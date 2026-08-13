@@ -39,3 +39,7 @@ Excalidraw
 
 # Blog automation runtime logs
 .agents/log/
+.agents/.env
+.agents/**/__pycache__/
+.agents/draft/
+.agents/generated/
