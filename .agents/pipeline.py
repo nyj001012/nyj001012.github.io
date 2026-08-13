@@ -164,6 +164,7 @@ def normalize_frontmatter_output(content):
 
     required_fields = {
         "title",
+        "slug",
         "excerpt",
         "category",
         "author_profile",
@@ -183,6 +184,12 @@ def normalize_frontmatter_output(content):
         )
     if extract_frontmatter_value(normalized, "title", "untitled") == "untitled":
         raise ValueError("Meta Generator output has an empty title.")
+    slug = extract_frontmatter_value(normalized, "slug", "")
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
+        raise ValueError(
+            "Meta Generator slug must use descriptive English words in "
+            f"lowercase ASCII kebab-case: {slug!r}"
+        )
     if extract_primary_category(normalized) == "uncategorized":
         raise ValueError("Meta Generator output has an invalid category list.")
     return normalized.rstrip() + "\n"
@@ -378,7 +385,7 @@ def main():
         logger.info("[4/7] Asset management and document merge completed.")
 
         post_title = extract_frontmatter_value(frontmatter_block, "title", "untitled")
-        slug = re.sub(r'[^a-z0-9가-힣]+', '-', post_title.lower()).strip('-')
+        slug = extract_frontmatter_value(frontmatter_block, "slug", "")
         generated_filename = f"{datetime.now().strftime('%Y-%m-%d')}-{slug}.md"
 
         category = extract_primary_category(frontmatter_block)
