@@ -92,6 +92,38 @@ class FileIOTool:
         raise ValueError("; ".join(details))
 
     @staticmethod
+    def validate_image_spacing(content):
+        """모든 Markdown/Obsidian 이미지 다음에 빈 줄이 있는지 검증합니다."""
+        image_reference = re.compile(
+            r"(?:"
+            r"!\[\[[^\]]+\]\]"
+            r"|!\[[^\]]*\]\([^)]+\)"
+            r")"
+        )
+        standalone_image = re.compile(
+            rf"^[ \t]*(?:>[ \t]*)?{image_reference.pattern}[ \t]*$"
+        )
+        lines = content.splitlines()
+        violations = []
+        for index, line in enumerate(lines):
+            if not image_reference.search(line):
+                continue
+            has_blank_line_after = (
+                index + 1 < len(lines)
+                and lines[index + 1].strip() in {"", ">"}
+            )
+            if not standalone_image.fullmatch(line) or not has_blank_line_after:
+                violations.append(index + 1)
+
+        if violations:
+            raise ValueError(
+                "Image spacing validation failed; put each image on its own line "
+                "and add a blank line after it "
+                f"at markdown lines={violations}"
+            )
+        return True
+
+    @staticmethod
     def extract_local_image_references(content):
         """Obsidian/Markdown 형식의 로컬 이미지 파일명을 등장 순서대로 추출합니다."""
         references = []

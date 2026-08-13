@@ -59,3 +59,17 @@ blockquote {
 blockquote > p {
   font-size: 0.8em !important;
 }
+
+.page__content .mermaid {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  background: transparent;
+  text-align: center;
+}
+
+.page__content .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}

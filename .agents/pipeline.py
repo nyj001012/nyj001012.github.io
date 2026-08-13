@@ -369,6 +369,7 @@ def main():
             refined_body = future_body.result()
             frontmatter_block = normalize_frontmatter_output(future_meta.result())
         FileIOTool.validate_draft_images(refined_body, images)
+        FileIOTool.validate_image_spacing(refined_body)
         frontmatter_block = normalize_frontmatter_category(frontmatter_block)
         logger.info("[3/7] Parallel editing and metadata generation completed.")
 
@@ -397,6 +398,7 @@ def main():
             category,
             datetime.now().strftime("%Y-%m-%d"),
         )
+        FileIOTool.validate_image_spacing(final_body)
         final_output_content = build_final_document(frontmatter_block, final_body)
         logger.info("[4/7] Assets published (count=%d).", len(published_assets))
 
