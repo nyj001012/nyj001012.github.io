@@ -158,45 +158,73 @@ class FileIOTool:
         return file_path
 
     @staticmethod
-    def publish_images(content, images, assets_root, category, date_prefix):
+    def publish_images(
+        content,
+        images,
+        asset_manifest,
+        assets_root,
+        category,
+        date_prefix,
+    ):
         """본문 이미지 링크를 공개 경로로 바꾸고 실제 파일을 복사합니다."""
         category_slug = re.sub(r"[^a-z0-9_-]+", "-", category.lower()).strip("-")
         category_slug = category_slug or "uncategorized"
         target_dir = os.path.join(assets_root, category_slug)
         published_paths = []
 
-        markdown_refs = [
-            match
-            for match in re.finditer(r"!\[[^\]]*\]\(([^)]+)\)", content)
-            if not match.group(1).strip().lower().startswith(
-                ("http://", "https://", "data:", "/assets/")
-            )
-        ]
-        if len(markdown_refs) != len(images):
-            raise ValueError(
-                "Generated image validation failed; "
-                f"markdown_references={len(markdown_refs)}; "
-                f"source_images={len(images)}"
-            )
+        image_paths = {
+            os.path.basename(path).casefold(): path
+            for path in images
+        }
+        total_replacements = 0
 
-        for index, image_path in enumerate(images, start=1):
-            original_ref = markdown_refs[index - 1].group(1).strip().strip("<>")
-            source_extension = os.path.splitext(image_path)[1].lower()
-            proposed_name = os.path.basename(original_ref.replace("\\", "/"))
+        for asset in asset_manifest:
+            source_name = asset["source"]
+            image_path = image_paths[source_name.casefold()]
+            proposed_name = asset["filename"]
             proposed_stem = os.path.splitext(proposed_name)[0]
-            safe_stem = re.sub(r"[^a-z0-9_-]+", "-", proposed_stem.lower()).strip("-")
-            if not safe_stem or safe_stem.startswith("pasted-image"):
-                safe_stem = f"blog-image-{index}"
-
-            target_name = f"{date_prefix}-{safe_stem}{source_extension}"
+            source_extension = os.path.splitext(image_path)[1].lower()
+            target_name = f"{date_prefix}-{proposed_stem}{source_extension}"
             os.makedirs(target_dir, exist_ok=True)
             target_path = os.path.join(target_dir, target_name)
             shutil.copy2(image_path, target_path)
 
             public_path = f"/assets/images/page/{category_slug}/{target_name}"
-            content = content.replace(original_ref, public_path, 1)
+            replacement = f"![{proposed_stem}]({public_path})"
+
+            obsidian_pattern = re.compile(
+                rf"!\[\[{re.escape(source_name)}(?:\|[^\]]+)?\]\]",
+                re.IGNORECASE,
+            )
+            content, replacement_count = obsidian_pattern.subn(replacement, content)
+
+            def replace_markdown(match):
+                nonlocal replacement_count
+                target = match.group(1).strip().strip("<>").split(maxsplit=1)[0]
+                filename = os.path.basename(unquote(target).replace("\\", "/"))
+                if filename.casefold() == source_name.casefold():
+                    replacement_count += 1
+                    return replacement
+                return match.group(0)
+
+            content = re.sub(
+                r"!\[[^\]]*\]\(([^)]+)\)",
+                replace_markdown,
+                content,
+            )
+            if replacement_count != 1:
+                raise ValueError(
+                    "Generated image validation failed; "
+                    f"source={source_name}; references={replacement_count}"
+                )
+            total_replacements += replacement_count
             published_paths.append(target_path)
 
+        if total_replacements != len(images):
+            raise ValueError(
+                "Generated image validation failed; "
+                f"replacements={total_replacements}; source_images={len(images)}"
+            )
         return content, published_paths
 
     @staticmethod

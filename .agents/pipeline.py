@@ -1,6 +1,7 @@
 import os
 import re
 import base64
+import json
 import mimetypes
 import logging
 from datetime import datetime
@@ -89,28 +90,39 @@ def load_prompt(prompt_path):
             return parts[2].strip()
     return content.strip()
 
-def call_agent(agent_name, system_prompt, user_content, model="gpt-4o"):
+def call_agent(
+    agent_name,
+    system_prompt,
+    user_content,
+    model="gpt-4o",
+    response_format=None,
+):
     logger.info("Agent '%s' request started (model=%s).", agent_name, model)
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
+    request = {
+        "model": model,
+        "messages": [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content}
+            {"role": "user", "content": user_content},
         ],
-        temperature=0.2
+        "temperature": 0.2,
+    }
+    if response_format is not None:
+        request["response_format"] = response_format
+    response = client.chat.completions.create(
+        **request
     )
     result = response.choices[0].message.content.strip()
     logger.info("Agent '%s' request completed (output_chars=%d).", agent_name, len(result))
     return result
 
 
-def build_asset_input(images, frontmatter_block, refined_body):
+def build_asset_input(images, refined_body):
     content = [
         {
             "type": "text",
             "text": (
                 f"Images found, in order: {images}\n\n"
-                f"Frontmatter:\n{frontmatter_block}\n\nBody:\n{refined_body}"
+                f"Body context:\n{refined_body}"
             ),
         }
     ]
@@ -136,24 +148,128 @@ def build_asset_input(images, frontmatter_block, refined_body):
     return content
 
 
-def normalize_markdown_output(content):
-    """Extract a complete Jekyll document from occasional agent narration/fences."""
+def normalize_frontmatter_output(content):
+    """Extract and validate the Meta Generator's YAML frontmatter block."""
     normalized = content.strip()
-    fence_start = re.search(r"```(?:markdown|md)\s*\r?\n", normalized, re.IGNORECASE)
+    fence_start = re.search(r"```(?:yaml|yml)\s*\r?\n", normalized, re.IGNORECASE)
     if fence_start:
         fence_end = normalized.rfind("\n```")
         if fence_end > fence_start.end():
             normalized = normalized[fence_start.end():fence_end].strip()
 
-    frontmatter_start = re.search(r"(?m)^---\s*$", normalized)
-    if not frontmatter_start:
-        raise ValueError("Agent output does not contain YAML frontmatter.")
-    normalized = normalized[frontmatter_start.start():]
+    delimiters = list(re.finditer(r"(?m)^---[ \t]*$", normalized))
+    if len(delimiters) < 2:
+        raise ValueError("Meta Generator output does not contain complete frontmatter.")
+    normalized = normalized[delimiters[0].start():delimiters[1].end()]
 
-    frontmatter = re.match(r"^---\s*\r?\n.*?\r?\n---\s*(?:\r?\n|$)", normalized, re.DOTALL)
-    if not frontmatter:
-        raise ValueError("Agent output contains incomplete YAML frontmatter.")
+    required_fields = {
+        "title",
+        "excerpt",
+        "category",
+        "author_profile",
+        "sidebar",
+        "tag",
+        "toc",
+        "toc_sticky",
+        "last_modified_at",
+    }
+    present_fields = set(
+        re.findall(r"(?m)^([a-z_]+):(?:[ \t]*.*)?$", normalized)
+    )
+    missing_fields = sorted(required_fields - present_fields)
+    if missing_fields:
+        raise ValueError(
+            f"Meta Generator output is missing required fields: {missing_fields}"
+        )
+    if extract_frontmatter_value(normalized, "title", "untitled") == "untitled":
+        raise ValueError("Meta Generator output has an empty title.")
+    if extract_primary_category(normalized) == "uncategorized":
+        raise ValueError("Meta Generator output has an invalid category list.")
     return normalized.rstrip() + "\n"
+
+
+def parse_asset_manifest(content, images):
+    """Validate the JSON filename manifest returned by the Asset Manager."""
+    try:
+        payload = json.loads(content)
+    except json.JSONDecodeError as error:
+        raise ValueError("Asset Manager output is not valid JSON.") from error
+
+    assets = payload.get("assets")
+    if not isinstance(assets, list):
+        raise ValueError("Asset Manager output must contain an 'assets' array.")
+
+    expected_sources = {
+        os.path.basename(path).casefold(): os.path.basename(path)
+        for path in images
+    }
+    expected_extensions = {
+        os.path.basename(path).casefold(): os.path.splitext(path)[1].lower()
+        for path in images
+    }
+    manifest = []
+    seen_sources = set()
+    seen_filenames = set()
+    filename_pattern = re.compile(
+        r"^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|jpe?g|gif|webp)$"
+    )
+
+    for item in assets:
+        if not isinstance(item, dict):
+            raise ValueError("Each Asset Manager item must be an object.")
+        source = item.get("source")
+        filename = item.get("filename")
+        if not isinstance(source, str) or not isinstance(filename, str):
+            raise ValueError("Each asset requires string 'source' and 'filename' fields.")
+
+        source_key = os.path.basename(source).casefold()
+        filename_key = filename.casefold()
+        if source_key not in expected_sources:
+            raise ValueError(f"Asset Manager returned an unknown source: {source}")
+        if source_key in seen_sources:
+            raise ValueError(f"Asset Manager duplicated source: {source}")
+        if filename_key in seen_filenames:
+            raise ValueError(f"Asset Manager duplicated filename: {filename}")
+        if os.path.basename(filename) != filename or not filename_pattern.fullmatch(filename):
+            raise ValueError(
+                "Asset Manager filename must use descriptive English words in "
+                f"lowercase ASCII kebab-case: {filename}"
+            )
+        if os.path.splitext(filename)[1].lower() != expected_extensions[source_key]:
+            raise ValueError(
+                f"Asset Manager must preserve the source extension: {filename}"
+            )
+
+        seen_sources.add(source_key)
+        seen_filenames.add(filename_key)
+        manifest.append(
+            {
+                "source": expected_sources[source_key],
+                "filename": filename,
+            }
+        )
+
+    missing_sources = sorted(set(expected_sources) - seen_sources)
+    if missing_sources:
+        missing_names = [expected_sources[source] for source in missing_sources]
+        raise ValueError(f"Asset Manager omitted source images: {missing_names}")
+    return manifest
+
+
+def build_final_document(frontmatter_block, body):
+    body = body.strip()
+    if not body:
+        raise ValueError("Content Editor output body is empty.")
+    if re.match(r"^---[ \t]*(?:\r?\n|$)", body):
+        raise ValueError("Content Editor output must not contain YAML frontmatter.")
+    fence_count = len(re.findall(r"(?m)^```", body))
+    if fence_count % 2:
+        raise ValueError(
+            f"Content Editor output has unbalanced code fences: {fence_count}"
+        )
+    document = f"{frontmatter_block.rstrip()}\n\n{body}\n"
+    normalize_frontmatter_output(document)
+    return document
 
 
 def extract_frontmatter_value(frontmatter_block, key, default):
@@ -244,19 +360,21 @@ def main():
             )
 
             refined_body = future_body.result()
-            frontmatter_block = future_meta.result()
+            frontmatter_block = normalize_frontmatter_output(future_meta.result())
+        FileIOTool.validate_draft_images(refined_body, images)
         frontmatter_block = normalize_frontmatter_category(frontmatter_block)
         logger.info("[3/7] Parallel editing and metadata generation completed.")
 
         logger.info("[4/7] Asset management and document merge started.")
         asset_prompt = load_prompt(os.path.join(PROMPTS_DIR, "03_asset.md"))
-        asset_input = build_asset_input(images, frontmatter_block, refined_body)
-        final_output_content = call_agent(
+        asset_input = build_asset_input(images, refined_body)
+        asset_manifest_output = call_agent(
             "Asset Manager",
             asset_prompt,
             asset_input,
+            response_format={"type": "json_object"},
         )
-        final_output_content = normalize_markdown_output(final_output_content)
+        asset_manifest = parse_asset_manifest(asset_manifest_output, images)
         logger.info("[4/7] Asset management and document merge completed.")
 
         post_title = extract_frontmatter_value(frontmatter_block, "title", "untitled")
@@ -264,13 +382,15 @@ def main():
         generated_filename = f"{datetime.now().strftime('%Y-%m-%d')}-{slug}.md"
 
         category = extract_primary_category(frontmatter_block)
-        final_output_content, published_assets = FileIOTool.publish_images(
-            final_output_content,
+        final_body, published_assets = FileIOTool.publish_images(
+            refined_body,
             images,
+            asset_manifest,
             ASSETS_IMAGES_DIR,
             category,
             datetime.now().strftime("%Y-%m-%d"),
         )
+        final_output_content = build_final_document(frontmatter_block, final_body)
         logger.info("[4/7] Assets published (count=%d).", len(published_assets))
 
         logger.info("[5/7] Saving completed draft to %s.", GENERATED_DIR)
