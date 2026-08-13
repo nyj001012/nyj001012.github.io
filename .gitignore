@@ -36,3 +36,6 @@ _site
 
 # Excalidraw
 Excalidraw
+
+# Blog automation runtime logs
+.agents/log/
