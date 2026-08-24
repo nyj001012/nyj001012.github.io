@@ -157,7 +157,7 @@ Loki는 로그 본문이 아니라 라벨 조합에 인덱스를 만든다.
 올리는 순간 요청 수만큼 스트림이 생긴다.  
 값 집합이 넓은 `route`, `query`, `msg`도 라인 본문에 남기고 필요할 때만 파싱한다.
 
-```logql
+```text
 {job="[프로젝트명]", level="error"}
 {job="[프로젝트명]"} | json | reqId="<uuid>"
 {job="[프로젝트명]"} | json | durationMs > 500
